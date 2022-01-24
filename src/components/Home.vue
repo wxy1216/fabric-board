@@ -16,7 +16,7 @@
                         <a-icon type="small-dash" />
                     </a-radio-button>
                     <a-radio-button :value="5" :style="radioStyle">
-                        <a-icon type="reoload" />
+                        <a-icon type="reload" />
                     </a-radio-button>
                     <a-radio-button :value="6" :style="radioStyle">
                         <a-icon type="arrow-right" />
