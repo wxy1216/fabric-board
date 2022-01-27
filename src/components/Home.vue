@@ -9,7 +9,7 @@
                     <a-radio-button :value="2" :style="radioStyle">
                         <a-icon type="arrow-right" />
                     </a-radio-button>
-                    <a-radio-button :value="3" :style="radioStyle">
+                    <a-radio-button value="line" :style="radioStyle">
                         <a-icon type="minus" />
                     </a-radio-button>
                     <a-radio-button :value="4" :style="radioStyle">
@@ -35,18 +35,20 @@
                     </a-radio-button>
                 </a-radio-group>
             </a-col>
-            <a-col flex="auto" class="main-content"></a-col>
+            <a-col flex="auto" class="main-content">
+                <my-canvas ref="canvas"></my-canvas>
+            </a-col>
         </a-row>
     </div>
 </template>
-
 <script>
-import { fabric } from "fabric";
+import MyCanvas from "./MyCanvas";
+
 export default {
     name: "HelloWorld",
     data() {
         return {
-            value: "1",
+            value: "0",
             radioStyle: {
                 width: "40px",
                 "border-radius": "5px",
@@ -54,22 +56,19 @@ export default {
             },
         };
     },
+    components: {
+        MyCanvas,
+    },
     methods: {
-        onChange(value) {},
+        onChange(e) {
+            this.$refs.canvas.startDraw(e.target.value);
+        },
     },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/* .left-content {
-    flex-wrap: wrap;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    align-content: flex-start;
-    display: flex;
-} */
 .left-content >>> .anticon {
     font-size: 24px;
 }
