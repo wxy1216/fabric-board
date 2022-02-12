@@ -1,5 +1,9 @@
 <template>
-    <div class="canvas-wrapper" id="canvas-wrapper"></div>
+    <div
+        class="canvas-wrapper"
+        id="canvas-wrapper"
+        @contextmenu.prevent.stop="endDraw"
+    ></div>
 </template>
 <script>
 import { fabric } from "fabric";
@@ -22,7 +26,7 @@ export default {
             mouseTo: { x: "", y: "" },
             mouseFrom: { x: "", y: "" },
             drawingObject: null, // 当前绘制对象
-            drawType: "1",
+            drawType: "",
         };
     },
     methods: {
@@ -33,7 +37,9 @@ export default {
             dom.width = wrapper.clientWidth;
             dom.height = wrapper.clientHeight;
             wrapper.appendChild(dom);
-            let canvas = new fabric.Canvas("canvas", { selection: false });
+            let canvas = new fabric.Canvas("canvas", {
+                selection: false,
+            });
             this.canvas = canvas;
         },
         initZoom() {
@@ -129,6 +135,7 @@ export default {
             this.canvas.off("mouse:up");
             this.canvas.off("mouse:over");
             this.canvas.off("mouse:out");
+            this.canvas.off("mouse:wheel");
         },
         drawing() {
             if (this.drawingObject) {
@@ -147,6 +154,7 @@ export default {
                         {
                             stroke: this.color,
                             strokeWidth: this.drawWidth,
+                            evented: false,
                         }
                     );
                     break;
@@ -164,6 +172,9 @@ export default {
             this.drawListener();
         },
         endDraw() {
+            // 关闭绘制
+            this.closeMouseEvent();
+            // 开启放大缩小
             this.initZoom();
             this.initMove();
         },
@@ -173,20 +184,12 @@ export default {
             let that = this;
             //绑定画板事件
             this.canvas.on("mouse:down", function (options) {
-                // var xy = this.transformMouse(
-                //     options.e.offsetX,
-                //     options.e.offsetY
-                // );
                 var xy = that.canvas.getPointer(options.e);
                 that.mouseFrom.x = xy.x;
                 that.mouseFrom.y = xy.y;
                 doDrawing = true;
             });
             this.canvas.on("mouse:up", function (options) {
-                // var xy = this.transformMouse(
-                //     options.e.offsetX,
-                //     options.e.offsetY
-                // );
                 if (!doDrawing) {
                     return;
                 }
@@ -194,26 +197,28 @@ export default {
                 that.mouseTo.x = xy.x;
                 that.mouseTo.y = xy.y;
                 that.drawing();
-                debugger;
                 that.drawingObject = null;
                 moveCount = 1;
                 doDrawing = false;
             });
             this.canvas.on("mouse:move", function (options) {
-                if (moveCount % 2 && !doDrawing) {
-                    //减少绘制频率
+                if (!doDrawing) {
                     return;
                 }
-                debugger;
+                if (moveCount % 2) {
+                    //减少绘制频率
+                    moveCount++;
+                    return;
+                }
                 moveCount++;
-                // var xy = this.transformMouse(
-                //     options.e.offsetX,
-                //     options.e.offsetY
-                // );
                 var xy = that.canvas.getPointer(options.e);
                 that.mouseTo.x = xy.x;
                 that.mouseTo.y = xy.y;
                 that.drawing();
+            });
+            this.canvas.on("mouse:right", function () {
+                console.log("ssss");
+                that.endDraw();
             });
         },
         // transformMouse(mouseX, mouseY) {
@@ -231,8 +236,8 @@ export default {
 .canvas-wrapper {
     height: 100%;
     width: 100%;
-    background: #ccc;
-    display: flex;
+    background: #fff;
+    border: 1px solid black;
     align-items: center;
 }
 </style>

@@ -2,38 +2,14 @@
     <div>
         <a-row type="flex">
             <a-col flex="50px" class="left-content">
-                <a-radio-group v-model="value" @change="onChange">
-                    <a-radio-button :value="1" :style="radioStyle">
-                        <a-icon type="highlight" />
-                    </a-radio-button>
-                    <a-radio-button :value="2" :style="radioStyle">
-                        <a-icon type="arrow-right" />
-                    </a-radio-button>
-                    <a-radio-button value="line" :style="radioStyle">
-                        <a-icon type="minus" />
-                    </a-radio-button>
-                    <a-radio-button :value="4" :style="radioStyle">
-                        <a-icon type="small-dash" />
-                    </a-radio-button>
-                    <a-radio-button :value="5" :style="radioStyle">
-                        <a-icon type="reload" />
-                    </a-radio-button>
-                    <a-radio-button :value="6" :style="radioStyle">
-                        <a-icon type="arrow-right" />
-                    </a-radio-button>
-                    <a-radio-button :value="7" :style="radioStyle">
-                        <a-icon type="border" />
-                    </a-radio-button>
-                    <a-radio-button :value="8" :style="radioStyle">
-                        <a-icon type="arrow-right" />
-                    </a-radio-button>
-                    <a-radio-button :value="9" :style="radioStyle">
-                        <a-icon type="font-colors" />
-                    </a-radio-button>
-                    <a-radio-button :value="10" :style="radioStyle">
-                        <a-icon type="inbox" />
-                    </a-radio-button>
-                </a-radio-group>
+                <template v-for="btn in btns">
+                    <a-button
+                        @click="onChange($event, btn.value)"
+                        :key="btn.value"
+                    >
+                        <a-icon :type="btn.icon"></a-icon>
+                    </a-button>
+                </template>
             </a-col>
             <a-col flex="auto" class="main-content">
                 <my-canvas ref="canvas"></my-canvas>
@@ -48,20 +24,27 @@ export default {
     name: "HelloWorld",
     data() {
         return {
-            value: "0",
-            radioStyle: {
-                width: "40px",
-                "border-radius": "5px",
-                padding: "2px",
-            },
+            btns: [
+                { icon: "highlight", value: "freeDraw" },
+                { icon: "minus", value: "line" },
+                { icon: "arrow-right", value: "" },
+                { icon: "small-dash", value: "" },
+                { icon: "reload", value: "" },
+                { icon: "arrow-right", value: "" },
+                { icon: "border", value: "" },
+                { icon: "font-colors", value: "" },
+                { icon: "inbox", value: "" },
+            ],
         };
     },
     components: {
         MyCanvas,
     },
     methods: {
-        onChange(e) {
-            this.$refs.canvas.startDraw(e.target.value);
+        onChange(e, value) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.$refs.canvas.startDraw(value);
         },
     },
 };
@@ -75,5 +58,10 @@ export default {
 .main-content {
     height: calc(100vh - 12px);
     background: black;
+}
+.left-btn {
+    width: 40px;
+    border-radius: 5px;
+    padding: 2px;
 }
 </style>
