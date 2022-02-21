@@ -39,6 +39,7 @@ export default {
             wrapper.appendChild(dom);
             let canvas = new fabric.Canvas("canvas", {
                 selection: false,
+                selectable: false,
             });
             this.canvas = canvas;
         },
@@ -136,6 +137,7 @@ export default {
             this.canvas.off("mouse:over");
             this.canvas.off("mouse:out");
             this.canvas.off("mouse:wheel");
+            this.canvas.isDrawingMode = false;
         },
         drawing() {
             if (this.drawingObject) {
@@ -158,6 +160,8 @@ export default {
                         }
                     );
                     break;
+                case "freeDraw":
+                    break;
             }
             if (canvasObject) {
                 this.canvas.add(canvasObject);
@@ -168,8 +172,13 @@ export default {
             this.drawType = type;
             // 关闭画布放大缩小
             this.closeMouseEvent();
-            // 开启画布绘制监听
-            this.drawListener();
+
+            if (this.drawType === "freeDraw") {
+                this.freeDraw();
+            } else {
+                // 开启画布绘制监听
+                this.drawListener();
+            }
         },
         endDraw() {
             // 关闭绘制
@@ -181,6 +190,8 @@ export default {
         drawListener() {
             let doDrawing = false;
             let moveCount = 0;
+            this.canvas.skipTargetFind = true; //画板元素不能被选中
+            this.canvas.selection = false; //画板不显示选中
             let that = this;
             //绑定画板事件
             this.canvas.on("mouse:down", function (options) {
@@ -216,10 +227,15 @@ export default {
                 that.mouseTo.y = xy.y;
                 that.drawing();
             });
-            this.canvas.on("mouse:right", function () {
-                console.log("ssss");
-                that.endDraw();
-            });
+        },
+        freeDraw() {
+            //  same as `PencilBrush`
+            this.canvas.freeDrawingBrush = new fabric.PencilBrush(this.canvas);
+            this.canvas.isDrawingMode = true;
+            //  optional
+            this.canvas.freeDrawingBrush.width = 10;
+            //  undo erasing
+            this.canvas.freeDrawingBrush.inverted = true;
         },
         // transformMouse(mouseX, mouseY) {
         //     debugger;
