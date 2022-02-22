@@ -162,6 +162,33 @@ export default {
                     break;
                 case "freeDraw":
                     break;
+                case "dashLine":
+                    canvasObject = new fabric.Line(
+                        [
+                            this.mouseFrom.x,
+                            this.mouseFrom.y,
+                            this.mouseTo.x,
+                            this.mouseTo.y,
+                        ],
+                        {
+                            stroke: this.color,
+                            strokeWidth: this.drawWidth,
+                            evented: false,
+                            strokeDashArray: [3, 1],
+                        }
+                    );
+                    break;
+                case "erase":
+                    break;
+                case "arrow":
+                    canvasObject = new fabric.Path(this.drawArrow(this.mouseFrom.x, this.mouseFrom.y,this.mouseTo.x, this.mouseTo.y, 30, 30), {
+                        fill: "rgba(255,255,255,0)",
+                        stroke: this.color,
+                        strokeWidth: this.drawWidth,
+                        evented: false,
+                    });
+                    break;
+
             }
             if (canvasObject) {
                 this.canvas.add(canvasObject);
@@ -175,6 +202,8 @@ export default {
 
             if (this.drawType === "freeDraw") {
                 this.freeDraw();
+            } else if (this.drawType === "erase") {
+                this.freeEarse();
             } else {
                 // 开启画布绘制监听
                 this.drawListener();
@@ -237,6 +266,40 @@ export default {
             //  undo erasing
             this.canvas.freeDrawingBrush.inverted = true;
         },
+        freeEarse() {
+            // 暂不支持
+            // //  same as `PencilBrush`
+            // this.canvas.freeDrawingBrush = new fabric.EraserBrush(this.canvas);
+            // this.canvas.isDrawingMode = true;
+            // //  optional
+            // this.canvas.freeDrawingBrush.width = 10;
+            // //  undo erasing
+            // this.canvas.freeDrawingBrush.inverted = true;
+        },
+        drawArrow(fromX, fromY, toX, toY, theta, headlen) {
+            theta = typeof theta != "undefined" ? theta : 30;
+            headlen = typeof theta != "undefined" ? headlen : 10;
+            // 计算各角度和对应的P2,P3坐标
+            var angle = Math.atan2(fromY - toY, fromX - toX) * 180 / Math.PI,
+            angle1 = (angle + theta) * Math.PI / 180,
+            angle2 = (angle - theta) * Math.PI / 180,
+            topX = headlen * Math.cos(angle1),
+            topY = headlen * Math.sin(angle1),
+            botX = headlen * Math.cos(angle2),
+            botY = headlen * Math.sin(angle2);
+            var arrowX = fromX - topX,
+            arrowY = fromY - topY;
+            var path = " M " + fromX + " " + fromY;
+            path += " L " + toX + " " + toY;
+            arrowX = toX + topX;
+            arrowY = toY + topY;
+            path += " M " + arrowX + " " + arrowY;
+            path += " L " + toX + " " + toY;
+            arrowX = toX + botX;
+            arrowY = toY + botY;
+            path += " L " + arrowX + " " + arrowY;
+            return path;
+        }
         // transformMouse(mouseX, mouseY) {
         //     debugger;
         // },

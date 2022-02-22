@@ -27,13 +27,13 @@ export default {
             btns: [
                 { icon: "highlight", value: "freeDraw" },
                 { icon: "minus", value: "line" },
-                { icon: "arrow-right", value: "1" },
-                { icon: "small-dash", value: "2" },
+                { icon: "arrow-right", value: "arrow" },
+                { icon: "small-dash", value: "dashLine" },
                 { icon: "reload", value: "3" },
-                { icon: "arrow-right", value: "4" },
                 { icon: "border", value: "5" },
                 { icon: "font-colors", value: "6" },
-                { icon: "inbox", value: "7" },
+                { icon: "inbox", value: "erase" },
+                { icon: "save", value: "4" },
             ],
         };
     },

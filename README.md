@@ -18,3 +18,5 @@ npm run build
 npm run build --report
 ```
 ### fabric画图
+
+参考：https://github.com/vipstone/drawingboard
